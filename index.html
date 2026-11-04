@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>∫ntegral</title>
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#0a0e1a">
+<link rel="apple-touch-icon" href="icon-192.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="∫ntegral">
+<style>
+:root{box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);
+--bg:#0a0e1a;--fg:#e8ecf5;--mute:#8590ab;--card:#121a2e;--line:#1f2a45;--ok:#3fae6a;--bad:#d9534f;--bb:#070b14}
+@media (prefers-color-scheme:light){:root:not([data-theme="dark"]){--bg:#f3f5fb;--fg:#141a2b;--mute:#5d6783;--card:#fff;--line:#d6dcee;--bb:#f6f8fc}}
+:root[data-theme="light"]{--bg:#f3f5fb;--fg:#141a2b;--mute:#5d6783;--card:#fff;--line:#d6dcee;--bb:#f6f8fc}
+:root[data-theme="dark"]{--bg:#0a0e1a;--fg:#e8ecf5;--mute:#8590ab;--card:#121a2e;--line:#1f2a45;--bb:#070b14}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*,*:before,*:after{box-sizing:inherit}
+body{margin:0;transition:background-color .16s;background:var(--bg);color:var(--fg);font-family:Georgia,"Times New Roman",serif;min-height:100vh;overflow-x:hidden;
+background-image:linear-gradient(var(--line) 1px,transparent 1px),linear-gradient(90deg,var(--line) 1px,transparent 1px);background-size:56px 56px}
+button{font:inherit;color:var(--fg);cursor:pointer}
+.top{display:flex;justify-content:space-between;align-items:center;padding:14px 16px}
+.btn{background:var(--card);border:1px solid var(--line);border-radius:999px;padding:10px 16px;font-size:14px}
+button:focus-visible,input:focus-visible{outline:2px solid #5aa0e6;outline-offset:2px}
+#menu{display:none;margin:0 16px;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:6px}
+#menu button{display:block;width:100%;text-align:left;background:none;border:0;padding:12px}
+.scr{display:none}
+.ring{position:relative;width:min(100%,460px);aspect-ratio:1/1.12;margin:0 auto}
+.layer{position:absolute;inset:0}
+.center{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);text-align:center;width:62%}
+.center i{font-size:15px;color:var(--mute)}
+.center h1,.center h2{margin:0;line-height:1}
+.center h1{font-size:clamp(40px,13vw,58px);background:linear-gradient(90deg,#4a90d9,#e6d9a8,#4a90d9);-webkit-background-clip:text;background-clip:text;color:transparent}
+.center h2{font-size:clamp(30px,9vw,40px);color:#4a90d9}
+.center p{margin:8px 0 0;font-size:12px;color:var(--mute);font-style:italic}
+.center small{display:block;margin-top:10px;font-size:12px;color:var(--mute)}
+.center small.hint{font:9px ui-monospace,Menlo,monospace;letter-spacing:.18em;text-transform:uppercase;opacity:.8}
+.center b{color:var(--fg);font-variant-numeric:tabular-nums}
+.node{position:absolute;transform:translate(-50%,-50%);text-align:center;width:96px}
+.orb{width:62px;height:62px;border-radius:50%;border:1px solid var(--c);background:color-mix(in srgb,var(--c) 16%,var(--bg));color:var(--c);font-size:24px;display:grid;place-items:center;margin:0 auto;box-shadow:0 0 22px color-mix(in srgb,var(--c) 35%,transparent)}
+.node span{display:block;font-size:13px;margin-top:6px}
+.node em{display:inline-block;font:normal 9px ui-monospace,Menlo,monospace;letter-spacing:.15em;margin-top:7px}
+.node em.new{background:#a78bfa;color:#1a1030;border-radius:999px;padding:3px 10px;font-weight:bold}
+.pad{max-width:520px;margin:0 auto;padding:4px 18px 28px}
+#ttl,#atl{font-size:30px;text-align:center;margin:8px 0 4px}
+#dots{text-align:center;height:18px}
+.dot{display:inline-block;width:9px;height:9px;border-radius:50%;background:var(--c);opacity:.35;margin:0 5px}
+.dot.on{opacity:1;width:13px;height:13px;vertical-align:-2px}
+#stats{text-align:center;font:11px ui-monospace,Menlo,monospace;letter-spacing:.12em;text-transform:uppercase;color:var(--mute);margin:12px 0 18px}
+#stats b{color:var(--fg);font-variant-numeric:tabular-nums}
+#q{font-size:24px;line-height:1.5;text-align:center;margin:8px 0 18px}
+.note{font-size:13px;color:var(--mute);margin-top:6px}
+.row{display:flex;gap:8px;border-top:1px solid var(--line);border-bottom:1px solid var(--line);padding:8px 0;margin-bottom:14px}
+#inp{flex:1;min-width:0;background:none;border:0;color:var(--fg);font:italic 18px Georgia,serif;padding:8px}
+#send{background:none;border:1px solid var(--line);border-radius:12px;width:48px;font-size:20px}
+.opt{display:block;width:100%;text-align:left;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px;margin:0 0 10px;font-size:17px}
+.opt.bad{border-color:var(--bad);opacity:.6}.opt.ok{border-color:var(--ok);background:color-mix(in srgb,var(--ok) 20%,var(--card))}
+#tools{display:flex;justify-content:center;gap:10px;flex-wrap:wrap}
+#kb{display:none;justify-content:center;gap:8px;margin:12px 0}
+#kb button{background:var(--card);border:1px solid var(--line);border-radius:10px;width:46px;height:46px;font-size:18px}
+#fb{margin:12px 0}
+#fb .box{display:flex;align-items:center;gap:12px;border-radius:14px;padding:13px 16px;font-size:17px;border:1px solid var(--k);background:color-mix(in srgb,var(--k) 14%,var(--card));animation:pop .25s ease-out}
+#fb .box i{width:12px;height:12px;border-radius:50%;background:var(--k);flex:none}
+#fb .ok{--k:var(--ok)}#fb .bad{--k:var(--bad)}
+@keyframes pop{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+body.ex #send.ok{border-color:var(--ok);color:var(--ok)}
+body.ex #send.bad{border-color:var(--bad);color:var(--bad)}
+#hint{text-align:center;color:var(--mute);font-style:italic;margin:8px 0}
+#sol{display:none;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:6px 16px 6px 36px;margin:14px 0}
+#sol li{margin:10px 0;line-height:1.45}
+#nx{display:none;width:100%;margin-top:6px;font-size:16px}
+.chips{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin:14px 0}
+.chip.on{border-color:var(--c);color:var(--c)}
+.day{display:flex;justify-content:space-between;width:100%;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:13px 16px;margin:0 0 8px;font-size:16px}
+sup,sub{font-size:.65em}
+body.ex{--bg:color-mix(in srgb,var(--ac) 9%,var(--bb));--line:color-mix(in srgb,var(--ac) 15%,var(--bg));background-image:radial-gradient(ellipse 85% 50% at 50% 0%,color-mix(in srgb,var(--ac) 24%,transparent),transparent),linear-gradient(var(--line) 1px,transparent 1px),linear-gradient(90deg,var(--line) 1px,transparent 1px);background-size:auto,56px 56px,56px 56px;background-repeat:no-repeat,repeat,repeat}
+body.ex #ttl{color:color-mix(in srgb,var(--fg) 72%,transparent)}
+body.ex #stats b{color:var(--ac)}body.ex #stats b.cd{color:var(--fg)}
+body.ex .row{border-color:color-mix(in srgb,var(--ac) 45%,transparent)}
+body.ex #send{border-radius:50%;border-color:color-mix(in srgb,var(--ac) 45%,transparent);color:var(--ac)}
+body.ex #tools .btn{border-color:color-mix(in srgb,var(--ac) 35%,var(--line))}
+body.ex #h1{box-shadow:0 0 0 3px color-mix(in srgb,var(--ac) 20%,transparent),0 0 20px color-mix(in srgb,var(--ac) 30%,transparent)}
+body.ex #kbt{color:var(--ac)}
+body.ex #sol,body.ex .opt{border-color:color-mix(in srgb,var(--ac) 30%,var(--line))}
+body.ex #dots .dot.on{box-shadow:0 0 10px var(--c)}
+.n{display:inline-grid;place-items:center;width:24px;height:24px;border-radius:50%;border:1px solid var(--ac);color:var(--ac);font:normal 12px ui-monospace,Menlo,monospace;margin-right:8px;vertical-align:middle}
+@keyframes rise{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:none}}
+#ex.enter>*{animation:rise .7s cubic-bezier(.2,.7,.2,1) both;animation-delay:calc(var(--i,0)*80ms)}
+.flood{position:fixed;width:62px;height:62px;border-radius:50%;z-index:60}
+.glyph{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);font-size:clamp(100px,32vw,150px);line-height:1;color:#5aa0e6;text-shadow:0 0 30px rgba(74,144,217,.55);pointer-events:none;z-index:5}
+</style>
+</head>
+<body>
+<div class="top"><button class="btn" id="mbtn" aria-expanded="false">Menu</button><button class="btn" id="tbtn" aria-label="Toggle theme">☀</button></div>
+<div id="menu"></div>
+<div id="stage" class="scr ring"></div>
+<div id="arch" class="scr pad"><button class="btn" id="aback">‹ Back</button><h2 id="atl"></h2><div class="chips" id="chips"></div><div id="days"></div></div>
+<div id="ex" class="scr pad">
+  <button class="btn" id="back">‹ Back</button>
+  <h2 id="ttl"></h2><div id="dots"></div><div id="stats"></div>
+  <div id="q"></div>
+  <div id="opts"></div>
+  <div class="row" id="row"><input id="inp" placeholder="Click here to start typing your answer…" autocomplete="off" autocapitalize="off" spellcheck="false"><button id="send" aria-label="Submit">→</button></div>
+  <div id="fb" role="status"></div>
+  <div id="tools"><button class="btn" id="h1">Hint 1</button><button class="btn" id="h2">🔒 Locked</button><button class="btn" id="kbt" aria-label="Keyboard">⌨</button></div>
+  <div id="kb"></div>
+  <div id="hint"></div>
+  <ol id="sol"></ol>
+  <button class="btn" id="nx">Practice another</button>
+</div>
+<script>
+var R=Math.random;
+var ri=function(a,b){return a+Math.floor(R()*(b-a+1))};
+function seed(s){var h=2166136261;for(var i=0;i<s.length;i++){h^=s.charCodeAt(i);h=Math.imul(h,16777619)}var a=h>>>0;R=function(){a=(a+0x6D2B79F5)>>>0;var t=a;t=Math.imul(t^t>>>15,t|1);t^=t+Math.imul(t^t>>>7,t|61);return((t^t>>>14)>>>0)/4294967296}}
+var $=function(i){return document.getElementById(i)};
+var p2=function(x){return String(x).padStart(2,"0")};
+var dk=function(d){return d.getFullYear()+"-"+p2(d.getMonth()+1)+"-"+p2(d.getDate())};
+var fmt=function(s){return new Date(s+"T12:00:00").toLocaleDateString("en",{weekday:"short",month:"short",day:"numeric"})};
+var mem={};
+var REMOTE={};fetch("exercises.json",{cache:"no-cache"}).then(function(r){return r.ok?r.json():{}}).then(function(j){REMOTE=j||{}}).catch(function(){});
+function ld(k){try{var v=localStorage.getItem("id|"+k);return v?JSON.parse(v):mem[k]||null}catch(e){return mem[k]||null}}
+function sv(k,v){mem[k]=v;try{localStorage.setItem("id|"+k,JSON.stringify(v))}catch(e){}}
+function streak(k){var s=ld("st|"+k);if(!s||!s.last)return 0;var y=dk(new Date(Date.now()-864e5));return s.last==dk(new Date())||s.last==y?s.n:0}
+function streakUp(k){var s=ld("st|"+k)||{n:0},t=dk(new Date());if(s.last==t)return;s.n=s.last==dk(new Date(Date.now()-864e5))?s.n+1:1;s.last=t;sv("st|"+k,s)}
+function shuffle(a){for(var i=a.length-1;i>0;i--){var j=ri(0,i),t=a[i];a[i]=a[j];a[j]=t}return a}
+var sup=function(p){return p==1?"":"<sup>"+p+"</sup>"};
+var term=function(c,p){return p==0?String(c):(c==1?"":c==-1?"-":c)+"x"+sup(p)};
+function fp(ts){return ts.map(function(t,i){var c=t[0],p=t[1];if(i==0)return term(c,p).replace(/^-/,"−");return(c<0?" − ":" + ")+term(Math.abs(c),p)}).join("")}
+function pick(n,lo,hi){var s={},a=[];while(a.length<n){var p=ri(lo,hi);if(!s[p]){s[p]=1;a.push(p)}}return a.sort(function(x,y){return y-x})}
+function gcd(a,b){a=Math.abs(a);b=Math.abs(b);while(b){var t=a%b;a=b;b=t}return a||1}
+function fr(n,d){var g=gcd(n,d);n/=g;d/=g;if(d<0){n=-n;d=-d}return d==1?String(n):n+"/"+d}
+function sh(n,d){var s=fr(n,d);return s.indexOf("/")<0?s:s+" ≈ "+(n/d).toFixed(2)}
+function pnum(s){s=String(s).replace(/\s/g,"").replace(",",".").replace(/[−–]/g,"-");var m=/^(-?\d+(?:\.\d+)?)\/(-?\d+(?:\.\d+)?)$/.exec(s);if(m)return +m[1]/+m[2];return /^-?\d*\.?\d+$/.test(s)?parseFloat(s):NaN}
+var OPS=["∧","∨","→","↔"];
+function tree(nv,d){if(d==0)return{x:ri(0,nv-1)};var o=ri(0,4);return o==4?{o:"¬",a:tree(nv,d-1)}:{o:OPS[o],a:tree(nv,d-1),b:tree(nv,d-1)}}
+function ev(n,e){if(n.x!=null)return e[n.x];var a=ev(n.a,e);if(n.o=="¬")return!a;var b=ev(n.b,e);return n.o=="∧"?a&&b:n.o=="∨"?a||b:n.o=="→"?!a||b:a===b}
+function ts(n,V){return n.x!=null?V[n.x]:n.o=="¬"?"¬"+ts(n.a,V):"("+ts(n.a,V)+" "+n.o+" "+ts(n.b,V)+")"}
+function cnt(nv,d){var V=["p","q","r"].slice(0,nv),N=1<<nv,tr,t,s,rows,i,k,e;
+ for(tr=0;tr<80;tr++){t=tree(nv,d);s=ts(t,V);rows=[];for(i=0;i<N;i++){e=[];for(k=0;k<nv;k++)e.push(!((i>>(nv-1-k))&1));if(ev(t,e))rows.push(e.map(function(b){return b?"T":"F"}).join(""))}
+  if(rows.length>0&&rows.length<N&&V.every(function(x){return s.indexOf(x)>=0})&&s.length<=34&&!/\(([pqr]) [∧∨→↔] \1\)/.test(s))break}
+ return nm("How many of the "+N+" possible truth assignments of "+V.join(", ")+" make this formula true?<div style=\"margin-top:10px\">"+s+"</div>",rows.length,String(rows.length),["A formula with "+nv+" variable"+(nv>1?"s":"")+" has "+N+" rows (T = true, F = false). Evaluate it in each row, working from the innermost parentheses outward.","It is true in these rows ("+V.join("")+"): "+rows.join(", ")+".","That makes "+rows.length+" rows."])}
+
+var LB=[
+["If p → q is true and p is true, what follows?","q is true",["q is false","Nothing can be concluded","¬p is true"],["This is modus ponens.","If the antecedent and the implication are true, the consequent must be true."]],
+["When is p → q false?","p true and q false",["p false and q true","p false and q false","p true and q true"],["An implication only fails when something true leads to something false.","That is the only case."]],
+["What is the negation of “for all x, P(x)”?","There exists x such that not P(x)",["For all x, not P(x)","There exists x such that P(x)","There is no x such that not P(x)"],["Negating “for all” turns it into “there exists”.","The property is negated too: some x fails P."]],
+["Which expression is equivalent to ¬(p ∧ q)?","¬p ∨ ¬q",["¬p ∧ ¬q","p ∨ q","¬p → q"],["De Morgan’s law: both terms are negated.","The conjunction becomes a disjunction."]],
+["What is the contrapositive of p → q?","¬q → ¬p",["q → p","¬p → ¬q","¬q → p"],["Swap the two terms and negate both.","The contrapositive is always equivalent to the original implication."]],
+["What is the negation of “there exists x such that P(x)”?","For all x, not P(x)",["There exists x such that not P(x)","For all x, P(x)","Not for all x, not P(x)"],["Negating “there exists” turns it into “for all”.","The property is negated too."]]];
+var nm=function(q,v,s,st){return{q:q,type:"num",v:v,show:s,steps:st}};
+var pk=function(a){return a[ri(0,a.length-1)]};
+var rd=function(x){return Math.round(x*1000)/1000};
+var G={
+integrales:function(l){var ps,q,a,m,c,qs;
+ if(l=="beginner"||l=="easy"){c=l=="beginner"?1:3;ps=pick(c,l=="beginner"?1:0,4);q=[];a=[];m={};
+  ps.forEach(function(n){var k=ri(1,6);q.push([k*(n+1),n]);a.push([k,n+1]);m[n+1]=k});qs=fp(q);
+  return{q:"∫ "+(c>1?"("+qs+")":qs)+" dx",type:"poly",m:m,show:fp(a)+" + C",steps:["Integrate term by term with the power rule: ∫ x<sup>n</sup> dx = x<sup>n+1</sup>/(n+1) + C.","Add 1 to each exponent and divide the coefficient by the new exponent.","Don’t forget the constant: + C."]}}
+ if(l=="medium"){var a0=ri(0,1),b=ri(a0+1,a0+3),num=0;ps=pick(ri(2,3),0,4);q=[];
+  ps.forEach(function(n){var k=ri(1,6);q.push([k,n]);num+=k*(Math.pow(b,n+1)-Math.pow(a0,n+1))*(60/(n+1))});
+  return nm("∫<sub>"+a0+"</sub><sup>"+b+"</sup> ("+fp(q)+") dx",num/60,sh(num,60),["Find an antiderivative F term by term: ∫ x<sup>n</sup> dx = x<sup>n+1</sup>/(n+1).","Evaluate F("+b+") − F("+a0+").","The result is "+sh(num,60)+"."])}
+ if(ri(0,3)>0){var p=ri(2,3),mm=ri(2,3),cc=ri(1,2),bb=ri(1,2),j=ri(1,3),top=Math.pow(bb,p)+cc,n1=j*(Math.pow(top,mm+1)-Math.pow(cc,mm+1));
+  return nm("∫<sub>0</sub><sup>"+bb+"</sup> "+term(j*p,p-1)+"(x"+sup(p)+" + "+cc+")"+sup(mm)+" dx",n1/(mm+1),sh(n1,mm+1),["Substitute u = x"+sup(p)+" + "+cc+", so du = "+p+"x"+sup(p-1)+" dx.","The integrand becomes "+j+"u"+sup(mm)+" du, and u runs from "+cc+" to "+top+".","Integrate: "+j+"u"+sup(mm+1)+"/"+(mm+1)+" evaluated between those limits gives "+sh(n1,mm+1)+"."])}
+ return pk([
+  nm("∫<sub>0</sub><sup>1</sup> x e<sup>x</sup> dx",1,"1",["Integration by parts with u = x and dv = e<sup>x</sup> dx.","∫ x e<sup>x</sup> dx = x e<sup>x</sup> − e<sup>x</sup>.","From 0 to 1: (e − e) − (0 − 1) = 1."]),
+  nm("∫<sub>0</sub><sup>π</sup> x sin x dx",Math.PI,"π ≈ 3.14",["Integration by parts with u = x and dv = sin x dx.","∫ x sin x dx = −x cos x + sin x.","From 0 to π: π."]),
+  nm("∫<sub>1</sub><sup>e</sup> x ln x dx",(Math.E*Math.E+1)/4,"(e² + 1)/4 ≈ 2.10",["Integration by parts with u = ln x and dv = x dx.","∫ x ln x dx = (x²/2) ln x − x²/4.","From 1 to e: (e²/2 − e²/4) − (−1/4) = (e² + 1)/4."]),
+  nm("∫<sub>0</sub><sup>1</sup> x² e<sup>x</sup> dx",Math.E-2,"e − 2 ≈ 0.72",["Integration by parts twice, starting with u = x².","∫ x² e<sup>x</sup> dx = e<sup>x</sup>(x² − 2x + 2).","From 0 to 1: e(1) − 2 = e − 2."]),
+  nm("∫<sub>1</sub><sup>e</sup> ln x dx",1,"1",["Integration by parts with u = ln x and dv = dx.","∫ ln x dx = x ln x − x.","From 1 to e: (e − e) − (0 − 1) = 1."])])},
+derivadas:function(l){var k=ri(1,2),a,b,c,d,n,p,q,v,ps,qq,dd,mm,e;
+ if(l=="easy"){ps=pick(2,1,5);qq=[];dd=[];e={};ps.forEach(function(x){var co=ri(1,9);qq.push([co,x]);dd.push([co*x,x-1]);e[x-1]=co*x});
+  return{q:"d/dx ("+fp(qq)+")",type:"poly",m:e,show:fp(dd),steps:["Power rule: d/dx (x<sup>n</sup>) = n·x<sup>n−1</sup>.","Multiply each coefficient by its exponent and lower the exponent by 1.","Constants vanish because their derivative is 0."]}}
+ if(l=="medium"){
+  if(ri(0,1)){a=ri(1,3);b=ri(1,4);n=ri(3,5);v=n*a*Math.pow(a*k+b,n-1);
+   return nm("Find f′("+k+") for f(x) = ("+(a==1?"":a)+"x + "+b+")"+sup(n)+".",v,String(v),["Chain rule: d/dx [g(x)<sup>n</sup>] = n·g(x)<sup>n−1</sup>·g′(x).","Here g(x) = "+(a==1?"":a)+"x + "+b+" and g′(x) = "+a+".","f′("+k+") = "+n+"·"+a+"·"+(a*k+b)+sup(n-1)+" = "+v+"."])}
+  p=ri(2,3);q=ri(2,3);c=ri(1,4);d=ri(1,4);v=p*Math.pow(k,p-1)*(Math.pow(k,q)+d)+(Math.pow(k,p)+c)*q*Math.pow(k,q-1);
+  return nm("Find f′("+k+") for f(x) = (x"+sup(p)+" + "+c+")(x"+sup(q)+" + "+d+").",v,String(v),["Product rule: (uv)′ = u′v + uv′.","u = x"+sup(p)+" + "+c+", u′ = "+p+"x"+sup(p-1)+"; v = x"+sup(q)+" + "+d+", v′ = "+q+"x"+sup(q-1)+".","At x = "+k+": u′v + uv′ = "+v+"."])}
+ e=ri(0,3);
+ if(e==0){mm=ri(2,3);n=ri(2,3);a=ri(1,2);b=ri(1,3);v=mm*Math.pow(k,mm-1)*Math.pow(a*k+b,n)+Math.pow(k,mm)*n*a*Math.pow(a*k+b,n-1);
+  return nm("Find f′("+k+") for f(x) = x"+sup(mm)+"("+(a==1?"":a)+"x + "+b+")"+sup(n)+".",v,String(v),["Use the product rule, and the chain rule for the second factor.","f′(x) = "+mm+"x"+sup(mm-1)+"("+(a==1?"":a)+"x + "+b+")"+sup(n)+" + x"+sup(mm)+"·"+n+"·"+a+"("+(a==1?"":a)+"x + "+b+")"+sup(n-1)+".","Substitute x = "+k+": f′("+k+") = "+v+"."])}
+ if(e==1){a=ri(1,6);b=ri(1,3);var num=2*k*(k+b)-(k*k+a),den=(k+b)*(k+b);
+  return nm("Find f′("+k+") for f(x) = (x² + "+a+") / (x + "+b+").",num/den,sh(num,den),["Quotient rule: (u/v)′ = (u′v − uv′) / v².","u = x² + "+a+", u′ = 2x; v = x + "+b+", v′ = 1.","At x = "+k+": ("+(2*k)+"·"+(k+b)+" − "+(k*k+a)+") / "+den+" = "+sh(num,den)+"."])}
+ if(e==2){a=ri(1,6);
+  return nm("Find f′("+k+") for f(x) = ln(x² + "+a+").",2*k/(k*k+a),sh(2*k,k*k+a),["Chain rule for logarithms: d/dx ln g(x) = g′(x) / g(x).","Here g(x) = x² + "+a+" and g′(x) = 2x.","f′("+k+") = "+(2*k)+" / "+(k*k+a)+" = "+sh(2*k,k*k+a)+"."])}
+ n=ri(2,3);
+ return nm("Find f′(1) for f(x) = x"+sup(n)+" e<sup>x</sup>.",(n+1)*Math.E,(n+1)+"e ≈ "+((n+1)*Math.E).toFixed(2),["Product rule: (uv)′ = u′v + uv′, with u = x"+sup(n)+" and v = e<sup>x</sup>.","f′(x) = "+n+"x"+sup(n-1)+"e<sup>x</sup> + x"+sup(n)+"e<sup>x</sup> = e<sup>x</sup>("+n+"x"+sup(n-1)+" + x"+sup(n)+").","At x = 1: e("+n+" + 1) = "+(n+1)+"e."])},
+diferenciales:function(l){var a,b,n,x0,dx,v,ps,qq,dd,e,s,m,d;
+ if(l=="easy"){ps=pick(2,1,5);qq=[];dd=[];e={};ps.forEach(function(x){var co=ri(1,9);qq.push([co,x]);dd.push([co*x,x-1]);e[x-1]=co*x});
+  return{q:"If y = "+fp(qq)+", find dy.",type:"poly",m:e,show:fp(dd)+" dx",steps:["First differentiate term by term: d/dx (x<sup>n</sup>) = n·x<sup>n−1</sup>.","Multiply each coefficient by its exponent and lower the exponent by 1. Then dy = (dy/dx)·dx.","Constants vanish because their derivative is 0."]}}
+ if(l=="medium"){a=ri(1,4);b=ri(1,5);n=ri(2,3);x0=ri(1,4);dx=pk([0.1,0.2,0.5]);v=rd((a*n*Math.pow(x0,n-1)+b)*dx);
+  return nm("Let y = "+term(a,n)+" + "+b+"x. Use differentials to estimate the change in y when x goes from "+x0+" to "+rd(x0+dx)+".",v,String(v),["The estimate is dy = (dy/dx)·dx.","dy/dx = "+n*a+"x"+sup(n-1)+" + "+b+", which at x = "+x0+" equals "+(a*n*Math.pow(x0,n-1)+b)+".","dy = "+(a*n*Math.pow(x0,n-1)+b)+" · "+dx+" = "+v+"."])}
+ e=ri(0,2);
+ if(e==0){n=ri(4,12);d=ri(1,3);v=n+d/(2*n);
+  return nm("Use differentials to estimate √"+(n*n+d)+" (answer to 2 decimals).",v,rd(v)+"",["Take f(x) = √x near x = "+n*n+", where √"+n*n+" = "+n+". Then dy = dx / (2√x).","With dx = "+d+": dy = "+d+" / (2·"+n+") = "+rd(d/(2*n))+".","√"+(n*n+d)+" ≈ "+n+" + "+rd(d/(2*n))+" = "+rd(v)+"."])}
+ if(e==1){m=ri(2,5);d=ri(1,3);v=m+d/(3*m*m);
+  return nm("Use differentials to estimate ∛"+(m*m*m+d)+" (answer to 2 decimals).",v,rd(v)+"",["Take f(x) = ∛x near x = "+m*m*m+", where ∛"+m*m*m+" = "+m+". Then dy = dx / (3x<sup>2/3</sup>).","With dx = "+d+": dy = "+d+" / (3·"+m*m+") = "+rd(d/(3*m*m))+".","∛"+(m*m*m+d)+" ≈ "+m+" + "+rd(d/(3*m*m))+" = "+rd(v)+"."])}
+ s=ri(5,12);d=pk([0.1,0.2]);v=rd(3*s*s*d);
+ return nm("The side of a cube is measured as "+s+" cm, with a possible error of ±"+d+" cm. Use differentials to estimate the maximum error in the volume, in cm³.",v,String(v),["Volume V = s³, so dV = 3s² ds.","With s = "+s+" and ds = "+d+": dV = 3·"+s*s+"·"+d+".","The maximum error is about "+v+" cm³."])},
+limite:function(l){var c=ri(1,6),a,b,m,k,e;
+ if(l=="easy")return nm("lim<sub>x→"+c+"</sub> (x² − "+c*c+") / (x − "+c+")",2*c,String(2*c),["Substituting x = "+c+" gives 0/0, so factor.","x² − "+c*c+" = (x − "+c+")(x + "+c+") and (x − "+c+") cancels.","What remains is x + "+c+", which at x = "+c+" equals "+2*c+"."]);
+ if(l=="medium"){e=ri(0,2);
+  if(e==0){a=ri(2,8);b=ri(1,8);if(a==b)b++;return nm("lim<sub>x→"+a+"</sub> (x² − "+(a+b)+"x + "+a*b+") / (x − "+a+")",a-b,String(a-b),["Substituting x = "+a+" gives 0/0, so factor.","x² − "+(a+b)+"x + "+a*b+" = (x − "+a+")(x − "+b+") and (x − "+a+") cancels.","What remains is x − "+b+", which at x = "+a+" equals "+(a-b)+"."])}
+  if(e==1)return nm("lim<sub>x→"+c+"</sub> (x³ − "+c*c*c+") / (x − "+c+")",3*c*c,String(3*c*c),["Substituting x = "+c+" gives 0/0, so factor.","x³ − "+c*c*c+" = (x − "+c+")(x² + "+c+"x + "+c*c+") and (x − "+c+") cancels.","What remains is x² + "+c+"x + "+c*c+", which at x = "+c+" equals "+3*c*c+"."]);
+  a=ri(2,7);b=ri(1,6);c=ri(2,6);var d=ri(1,9);
+  return nm("lim<sub>x→∞</sub> ("+a+"x² + "+b+"x) / ("+c+"x² + "+d+")",a/c,sh(a,c),["Divide every term by the highest power, x².","Terms like b/x and d/x² go to 0 as x → ∞.","What remains is "+a+"/"+c+" = "+sh(a,c)+"."])}
+ e=ri(0,3);
+ if(e==0){m=ri(2,6);a=ri(1,m*m-1);k=m*m-a;
+  return nm("lim<sub>x→"+a+"</sub> (√(x + "+k+") − "+m+") / (x − "+a+")",1/(2*m),sh(1,2*m),["Substituting x = "+a+" gives 0/0. Multiply top and bottom by the conjugate √(x + "+k+") + "+m+".","The numerator becomes (x + "+k+") − "+m*m+" = x − "+a+", which cancels with the denominator.","What remains is 1 / (√(x + "+k+") + "+m+"), which at x = "+a+" equals 1/"+2*m+"."])}
+ if(e==1){a=ri(2,7);b=ri(2,7);
+  return nm("lim<sub>x→0</sub> sin("+a+"x) / ("+b+"x)",a/b,sh(a,b),["Use the standard limit sin(u)/u → 1 as u → 0.","Rewrite as ("+a+"/"+b+") · sin("+a+"x)/("+a+"x).","The limit is "+sh(a,b)+"."])}
+ if(e==2){a=ri(2,6);
+  return nm("lim<sub>x→0</sub> (1 − cos("+a+"x)) / x²",a*a/2,sh(a*a,2),["Use the standard limit (1 − cos u)/u² → 1/2 as u → 0.","Here u = "+a+"x, so x² = u²/"+a*a+".","The limit is "+a*a+"/2 = "+sh(a*a,2)+"."])}
+ a=ri(2,7);b=ri(2,7);
+ return nm("lim<sub>x→0</sub> (e<sup>"+a+"x</sup> − 1) / ("+b+"x)",a/b,sh(a,b),["Use the standard limit (e<sup>u</sup> − 1)/u → 1 as u → 0.","Rewrite as ("+a+"/"+b+") · (e<sup>"+a+"x</sup> − 1)/("+a+"x).","The limit is "+sh(a,b)+"."])},
+ingenieria:function(l){var m,a,I,R1,R2,V,F,d,W,t,u,h,mu,w,ds,i;
+ if(l=="easy"){if(ri(0,1)){m=ri(2,12);a=ri(2,9);return nm("A mass of "+m+" kg accelerates at "+a+" m/s². What force acts on it, in newtons?",m*a,String(m*a),["Newton’s second law: F = m · a.",m+" · "+a+" = "+m*a+".","The force is "+m*a+" N."])}
+  I=ri(2,9);R1=ri(2,20);return nm("A current of "+I+" A flows through a "+R1+" Ω resistor. What is the voltage, in volts?",I*R1,String(I*R1),["Ohm’s law: V = I · R.",I+" · "+R1+" = "+I*R1+".","The voltage is "+I*R1+" V."])}
+ w=ri(0,2);
+ if(l=="medium"){
+  if(w==0){I=ri(1,6);R1=ri(2,15);R2=ri(2,15);V=I*(R1+R2);return nm("A "+V+" V battery drives current through a "+R1+" Ω and a "+R2+" Ω resistor in series. What current flows, in amps?",I,String(I),["In series, resistances add: R = R1 + R2.","R = "+R1+" + "+R2+" = "+(R1+R2)+" Ω.","I = V / R = "+V+" / "+(R1+R2)+" = "+I+" A."])}
+  if(w==1){F=ri(2,9);d=ri(2,9);W=F*d;ds=[];for(i=2;i<=W;i++)if(W%i==0)ds.push(i);t=pk(ds);return nm("A force of "+F+" N pushes a box "+d+" m in "+t+" s. What is the average power, in watts?",W/t,String(W/t),["Work W = F · d, and power P = W / t.","W = "+F+" · "+d+" = "+W+" J.","P = "+W+" / "+t+" = "+W/t+" W."])}
+  m=2*ri(1,6);u=ri(2,8);return nm("A body of "+m+" kg moves at "+u+" m/s. What is its kinetic energy, in joules?",m/2*u*u,String(m/2*u*u),["Kinetic energy: E = ½ · m · v².","½ · "+m+" · "+u+"² = "+m/2+" · "+u*u+".","The energy is "+m/2*u*u+" J."])}
+ if(w==0){h=pk([5,20,45,80]);u=Math.sqrt(20*h);return nm("An object is dropped from rest from a height of "+h+" m. Ignoring air resistance and taking g = 10 m/s², what is its speed when it hits the ground, in m/s?",u,String(u),["Energy conservation: m g h = ½ m v², so v = √(2 g h).","v = √(2 · 10 · "+h+") = √"+20*h+".","The speed is "+u+" m/s."])}
+ if(w==1){R1=ri(2,10);R2=2*ri(1,6);I=ri(1,4);V=I*(R1+R2/2);return nm("A "+R1+" Ω resistor is in series with two identical "+R2+" Ω resistors connected in parallel. The whole circuit is connected to "+V+" V. What current flows from the battery, in amps?",I,String(I),["Two identical resistors in parallel give R/2: "+R2+"/2 = "+R2/2+" Ω.","Total resistance = "+R1+" + "+R2/2+" = "+(R1+R2/2)+" Ω.","I = V / R = "+V+" / "+(R1+R2/2)+" = "+I+" A."])}
+ m=ri(2,8);a=ri(1,5);mu=pk([0.1,0.2,0.5]);F=Math.round(m*(a+10*mu));
+ return nm("A "+F+" N force pushes a "+m+" kg block across a floor with friction coefficient "+mu+". Taking g = 10 m/s², what is the block’s acceleration, in m/s²?",a,String(a),["Friction force = μ · m · g.","Friction = "+mu+" · "+m+" · 10 = "+rd(mu*m*10)+" N, so the net force is "+F+" − "+rd(mu*m*10)+" = "+rd(F-mu*m*10)+" N.","a = net force / m = "+rd(F-mu*m*10)+" / "+m+" = "+a+" m/s²."])},
+lilypath:function(l){var pos,s,t=[],st=[],i,d,k,n,a,mv,tr,dx,dy,h1,v1,txt;
+ if(l=="easy"){pos=ri(6,12);s=pos;
+  for(i=0;i<2;i++){d=ri(0,1)?1:-1;k=ri(1,5);if(pos+d*k<1||pos+d*k>20)d=-d;pos+=d*k;t.push((d>0?"right ":"left ")+k);st.push((d>0?"+":"−")+k+" → pad "+pos)}
+  return nm("The frog is on lily pad "+s+". It jumps "+t.join(", then ")+". Which lily pad does it land on?",pos,String(pos),["Right adds, left subtracts.","Start at "+s+": "+st.join("; ")+".","It ends on lily pad "+pos+"."])}
+ if(l=="medium"){s=ri(10,30);a=ri(1,3);n=pk([4,5]);mv=[a,-2*a,4*a,-8*a,16*a].slice(0,n);pos=s;
+  mv.forEach(function(x){pos+=x;st.push((x>0?"+":"−")+Math.abs(x)+" → pad "+pos)});
+  return nm("The frog starts on lily pad "+s+". Its first jump is "+a+" to the right. Each next jump is twice as long as the one before and goes the opposite way (left, then right, and so on). Which pad does it land on after "+n+" jumps?",pos,String(pos),["The jumps are "+a+", "+2*a+", "+4*a+"… alternating right (+) and left (−).",st.join("; ")+".","After "+n+" jumps it is on pad "+pos+"."])}
+ tr=pk([[3,4,5],[6,8,10],[5,12,13],[8,15,17]]);dx=tr[0]*(ri(0,1)?1:-1);dy=tr[1]*(ri(0,1)?1:-1);if(ri(0,1)){k=dx;dx=dy;dy=k}
+ h1=ri(-4,9);if(h1==0)h1=2;v1=ri(-4,9);if(v1==0)v1=-3;
+ mv=[["h",h1],["h",dx-h1],["v",v1],["v",dy-v1]].filter(function(x){return x[1]!=0});mv=shuffle(mv);
+ txt=mv.map(function(x){return x[0]=="h"?(x[1]>0?"right ":"left ")+Math.abs(x[1]):(x[1]>0?"up ":"down ")+Math.abs(x[1])});
+ return nm("The frog starts on a pad at the center of a grid (1 square = 1 unit). It jumps "+txt.join(", then ")+". How far, in a straight line, is it from where it started?",tr[2],String(tr[2]),["Right and up are positive; left and down are negative. Add the horizontal moves and the vertical moves separately.","Net horizontal = "+dx+", net vertical = "+dy+".","Distance = √("+dx*dx+" + "+dy*dy+") = √"+(dx*dx+dy*dy)+" = "+tr[2]+"."])},
+logica:function(l){var b;
+ if(l=="easy"){b=LB[ri(0,3)];return{q:b[0],type:"mc",show:b[1],opts:shuffle([b[1]].concat(b[2])),steps:b[3]}}
+ if(l=="medium"&&ri(0,1)){b=LB[4+ri(0,1)];return{q:b[0],type:"mc",show:b[1],opts:shuffle([b[1]].concat(b[2])),steps:b[3]}}
+ return l=="medium"?cnt(2,2):cnt(3,3)}
+};
+
+var LV={beginner:{n:"Beginner",s:"B",c:"#4a90d9"},easy:{n:"Easy",s:"E",c:"#2fb87a"},medium:{n:"Medium",s:"M",c:"#e0a030"},hard:{n:"Hard",s:"H",c:"#d9494f"}};
+var L3=["easy","medium","hard"];
+var T=[
+ {k:"integrales",n:"Integrals",o:"Integral",s:"∫",c:"#4a90d9",l:"CALCULUS",ls:["beginner","easy","medium","hard"],d:"A fresh integral every day, from clean power rules to gnarly polynomials. Four difficulty tiers and a fully worked solution."},
+ {k:"derivadas",n:"Derivatives",o:"Derivative",s:"dy/dx",c:"#5b8fd0",l:"CALCULUS",ls:L3,d:"One slope problem a day across easy, medium, and hard, each with a fully worked breakdown."},
+ {k:"limite",n:"Limit",o:"Limit",s:"lim",c:"#2fbfa6",l:"CALCULUS",ls:L3,d:"Limits that start as 0/0 and open up when you factor. One problem a day."},
+ {k:"ingenieria",n:"Engineering",o:"Engineering",s:"⚙",c:"#e0743a",l:"ENGINEERING",ls:L3,d:"Force, voltage and energy in short problems."},
+ {k:"lilypath",n:"LilyPath",o:"LilyPath",s:"🐸",c:"#3fae6a",l:"SPATIAL",ls:L3,d:"Follow the frog’s jumps across the lily pads."},
+ {k:"logica",n:"Logic",o:"Logic",s:"🧠",c:"#e08a39",l:"LOGIC",ls:L3,d:"Implications, quantifiers and equivalences."},
+ {k:"diferenciales",n:"Differentials",o:"Differential",s:"∂",c:"#a78bfa",b:1,ls:L3,d:"Find dy from y. One problem a day across three tiers."}];
+var ex=null,al="easy",cur=null,menu=$("menu");
+function show(id){document.body.classList.toggle("ex",id=="ex");["stage","arch","ex"].forEach(function(x){$(x).style.display=x==id?"block":"none"})}
+function layer(items,center,kind){var L=document.createElement("div");L.className="layer";L.kind=kind;L.innerHTML='<div class="center">'+center+"</div>";L.ns=[];L.n=items.length;
+ items.forEach(function(t){var d=document.createElement("div");d.className="node";
+  d.innerHTML='<button class="orb" style="--c:'+t.c+'" aria-label="'+t.n+'">'+t.s+"</button><span>"+t.n+"</span>"+(t.b?'<em class="new">NEW</em>':t.l?'<em style="color:'+t.c+'">'+t.l+"</em>":"");
+  d.querySelector("button").onclick=t.f;L.appendChild(d);L.ns.push(d)});return L}
+function place(L,off,r){L.ns.forEach(function(d,i){var a=(-90+i*360/L.n+off)*Math.PI/180;d.style.left=(50+r*Math.cos(a))+"%";d.style.top=(50+(r+1)*Math.sin(a))+"%"})}
+function go(items,center,dir,kind){var st=$("stage"),nl=layer(items,center,kind),ol=cur;show("stage");
+ if(!ol||ol.kind==kind||matchMedia("(prefers-reduced-motion: reduce)").matches){st.innerHTML="";place(nl,0,40);st.appendChild(nl);cur=nl;return}
+ st.appendChild(nl);ol.style.pointerEvents=nl.style.pointerEvents="none";var t0=0,D=1100;
+ function f(now){if(!t0)t0=now;var t=Math.min(1,(now-t0)/D),e=t<.5?4*t*t*t:1-Math.pow(-2*t+2,3)/2,rot=dir*360*e;
+  place(ol,rot,40-12*e);place(nl,rot-dir*360,28+12*e);ol.style.opacity=1-e;nl.style.opacity=e;
+  if(t<1)requestAnimationFrame(f);else{if(ol.parentNode)st.removeChild(ol);nl.style.pointerEvents="";nl.style.opacity="";cur=nl}}
+ place(nl,-dir*360,28);nl.style.opacity=0;requestAnimationFrame(f)}
+function launch(t,l,ev){var btn=ev&&ev.currentTarget,d0=dk(new Date());
+ if(!btn||matchMedia("(prefers-reduced-motion: reduce)").matches){start(t,l,d0,"daily");return}
+ var c=LV[l].c,r=btn.getBoundingClientRect(),ox=r.left+r.width/2,oy=r.top+r.height/2,W=innerWidth,H=innerHeight,L=cur;
+ L.style.pointerEvents="none";
+ L.ns.forEach(function(d){var o=d.querySelector(".orb");if(o===btn)return;var q=o.getBoundingClientRect(),dx=ox-(q.left+q.width/2),dy=oy-(q.top+q.height/2);
+  d.animate([{transform:"translate(-50%,-50%)",opacity:1},{transform:"translate(calc(-50% + "+(dx*.5-dy*.3)+"px),calc(-50% + "+(dy*.5+dx*.3)+"px)) scale(.7)",opacity:.8,offset:.5},{transform:"translate(calc(-50% + "+dx+"px),calc(-50% + "+dy+"px)) scale(.15)",opacity:0}],{duration:800,easing:"cubic-bezier(.5,0,.8,.4)",fill:"forwards"})});
+ L.querySelector(".center").animate([{opacity:1},{opacity:0}],{duration:500,fill:"forwards"});
+ btn.animate([{transform:"scale(1)"},{transform:"scale(1.3)",offset:.6},{transform:"scale(1.15)"}],{duration:900,fill:"forwards"});
+ var k=Math.hypot(Math.max(ox,W-ox),Math.max(oy,H-oy))/31*1.1,f=document.createElement("div");
+ f.className="flood";f.style.cssText="left:"+(ox-31)+"px;top:"+(oy-31)+"px;background:color-mix(in srgb,"+c+" 75%,#000);display:none";document.body.appendChild(f);
+ setTimeout(function(){f.style.display="block";f.animate([{transform:"scale(1)"},{transform:"scale("+k+")"}],{duration:800,easing:"cubic-bezier(.7,0,.3,1)",fill:"forwards"})},500);
+ setTimeout(function(){start(t,l,d0,"daily");var e=$("ex");[].forEach.call(e.children,function(n,i){n.style.setProperty("--i",i)});e.classList.add("enter");
+  f.animate([{opacity:1},{opacity:0}],{duration:800,easing:"ease-out",fill:"forwards"}).onfinish=function(){f.remove();L.style.pointerEvents="";e.classList.remove("enter")}},1350)}
+function intro(){var st=$("stage"),nl=layer(HI,HC,"home"),rm=matchMedia("(prefers-reduced-motion: reduce)").matches;
+ show("stage");st.innerHTML="";st.appendChild(nl);cur=nl;
+ if(rm){place(nl,0,40);return}
+ var c=nl.querySelector(".center"),g=document.createElement("div"),D=2300,t0=0;
+ g.className="glyph";g.textContent="∫";st.appendChild(g);nl.style.pointerEvents="none";
+ g.animate([{opacity:0,transform:"translate(-50%,-50%) scale(.6)"},{opacity:1,transform:"translate(-50%,-50%) scale(1)",offset:.3},{opacity:1,transform:"translate(-50%,-50%) scale(1)",offset:.55},{opacity:0,transform:"translate(-50%,-50%) scale(.5)"}],{duration:1400,easing:"ease-out",fill:"forwards"}).onfinish=function(){g.remove()};
+ c.animate([{opacity:0,transform:"translate(-50%,-50%) scale(.92)"},{opacity:1,transform:"translate(-50%,-50%) scale(1)"}],{duration:800,delay:1200,easing:"ease-out",fill:"both"});
+ function f(now){if(!t0)t0=now;var ms=now-t0;
+  nl.ns.forEach(function(d,i){var s=Math.min(1,Math.max(0,(ms-800-i*80)/900)),e=1-Math.pow(1-s,3),a=(-90+i*360/nl.n-(1-e)*300)*Math.PI/180,r=40*e;
+   d.style.left=(50+r*Math.cos(a))+"%";d.style.top=(50+(r+1)*Math.sin(a))+"%";d.style.opacity=e;d.style.transform="translate(-50%,-50%) scale("+(.3+.7*e)+")"});
+  if(ms<D)requestAnimationFrame(f);else{nl.ns.forEach(function(d){d.style.transform="";d.style.opacity=""});place(nl,0,40);nl.style.pointerEvents=""}}
+ nl.ns.forEach(function(d){d.style.opacity=0});requestAnimationFrame(f)}
+var HI=T.map(function(t){return{n:t.n,s:t.s,c:t.c,l:t.l,b:t.b,f:function(){openSub(t)}}});
+var HC='<i>The Daily</i><h1>∫ntegral</h1><p>Integrate a little learning into your daily routine.</p><small>Resets <b class="cd">--:--:--</b></small><small class="hint">Click any orb to continue</small>';
+function openSub(t){var it=[{n:"Back",s:"←",c:"#8590ab",f:function(){go(HI,HC,-1,"home")}}],lb=t.n.toUpperCase();
+ t.ls.forEach(function(l){it.push({n:LV[l].n,s:LV[l].s,c:LV[l].c,l:lb,f:function(ev){launch(t,l,ev)}})});
+ it.push({n:"Archive",s:"📅",c:"#4a90d9",l:lb,f:function(){openArch(t,"easy")}});
+ go(it,"<i>The Daily</i><h2>"+t.n+"</h2><p>"+t.d+'</p><small class="hint">Click any orb to continue</small>',1,"sub");menu.style.display="none"}
+function openArch(t,l){al=l;$("atl").textContent="Archive · "+t.n;
+ $("chips").innerHTML="";t.ls.forEach(function(x){var b=document.createElement("button");b.className="btn chip"+(x==al?" on":"");b.style.setProperty("--c",LV[x].c);b.textContent=LV[x].n;b.onclick=function(){openArch(t,x)};$("chips").appendChild(b)});
+ $("days").innerHTML="";for(var i=1;i<=14;i++){(function(i){var ds=dk(new Date(Date.now()-i*864e5)),r=ld(t.k+"|"+al+"|"+ds),b=document.createElement("button");b.className="day";b.innerHTML="<span>"+fmt(ds)+"</span><span>"+(r&&r.r==1?"✓":"")+"</span>";b.onclick=function(){start(t,al,ds,"archive")};$("days").appendChild(b)})(i)}
+ $("aback").onclick=function(){openSub(t)};show("arch")}
+function start(t,l,date,mode){ex={t:t,l:l,date:date,mode:mode,att:0,over:false,hint:0,msg:"",bad:{},res:0};
+ if(mode=="practice")R=Math.random;else seed(t.k+l+date);
+ ex.e=(mode!="practice"&&REMOTE[t.k+"|"+l+"|"+date])||G[t.k](l);R=Math.random;
+ if(mode=="daily"){var s=ld(t.k+"|"+l+"|"+date);if(s){ex.att=s.a;ex.res=s.r||0;ex.over=!!s.r;if(ex.over)ex.msg=ex.res==1?"Correct — elegant!":"Out of attempts — here is the solution."}}
+ $("inp").value="";document.body.style.setProperty("--ac",LV[l].c);show("ex");draw()}
+function draw(){var e=ex.e,L=LV[ex.l],t=ex.t,ov=ex.over;
+ $("ttl").innerHTML='<span style="color:'+L.c+'">'+L.n+"</span> "+t.o;
+ $("dots").innerHTML=t.ls.map(function(l){return'<i class="dot'+(l==ex.l?" on":"")+'" style="--c:'+LV[l].c+'"></i>'}).join("");
+ var left=ex.mode=="daily"?'Resets in <b class="cd">--:--:--</b>':ex.mode=="archive"?"Archive "+fmt(ex.date):"Practice";
+ $("stats").innerHTML="Streak <b>"+streak(t.k)+"</b> · Attempts <b>"+ex.att+"/5</b> · "+left;
+ $("q").innerHTML=e.q+(e.type=="num"?'<div class="note">Answer with a number. Fractions like 7/3 are fine.</div>':"");
+ var o=$("opts");o.innerHTML="";
+ if(e.type=="mc")e.opts.forEach(function(v){var b=document.createElement("button");b.className="opt"+(ex.bad[v]?" bad":"")+(ov&&v==e.show?" ok":"");b.textContent=v;b.onclick=function(){submit(v)};o.appendChild(b)});
+ $("row").style.display=e.type=="mc"||(ov&&!(ex.res==1&&ex.typed))?"none":"flex";$("inp").readOnly=ov;
+ $("kbt").style.display=e.type=="poly"&&!ov?"":"none";if(e.type!="poly"||ov)$("kb").style.display="none";
+ $("fb").innerHTML=ex.msg?'<div class="box '+(ex.res==1?"ok":"bad")+'"><i></i><span>'+ex.msg+"</span></div>":"";
+ var sb=$("send");sb.className=ex.mark||"";sb.textContent=ex.mark=="ok"?"✓":ex.mark=="bad"?"✕":"→";
+ var u2=ex.att>=2||ov;$("h1").innerHTML='<i class="n">1</i>Hint 1';$("h2").innerHTML=u2?'<i class="n">2</i>Hint 2':'<i class="n">🔒</i>Locked';$("h2").disabled=!u2;$("h2").style.opacity=u2?1:.5;
+ $("hint").innerHTML=ex.hint?e.steps[ex.hint-1]:"";
+ var s=$("sol");if(ov){s.innerHTML=e.steps.map(function(x){return"<li>"+x+"</li>"}).join("")+"<li><b>Answer: "+e.show+"</b></li>";s.style.display="block";$("nx").style.display="block";$("hint").innerHTML=""}else{s.style.display="none";$("nx").style.display="none"}}
+function parsePoly(s){s=s.toLowerCase().replace(/[\s*·]/g,"").replace(/[−–]/g,"-").replace(/[²³⁴⁵⁶]/g,function(c){return"^"+("²³⁴⁵⁶".indexOf(c)+2)}).replace(/d[xy]$/,"").replace(/\+c$/,"");
+ var tk=s.match(/[+-]?[^+-]+/g),m={};if(!tk)return null;
+ for(var i=0;i<tk.length;i++){var r=/^([+-]?)(\d*)(x?)(?:\^(\d+))?$/.exec(tk[i]);if(!r||(!r[2]&&!r[3])||(r[4]&&!r[3]))return null;
+  var c=(r[2]?+r[2]:1)*(r[1]=="-"?-1:1),p=r[3]?(r[4]?+r[4]:1):0;m[p]=(m[p]||0)+c}
+ for(var k in m)if(m[k]==0)delete m[k];return m}
+function same(a,b){var ka=Object.keys(a),kb=Object.keys(b);return ka.length==kb.length&&ka.every(function(k){return a[k]===b[k]})}
+function submit(v){if(ex.over)return;var e=ex.e,ok;
+ if(e.type=="mc")ok=v===e.show;
+ else if(e.type=="poly"){var m=parsePoly(v);if(!m){ex.msg="Couldn’t read that answer. Try something like 3x^2 + 5x - 1";ex.mark="bad";draw();return}ok=same(m,e.m)}
+ else{var n=pnum(v);if(isNaN(n)){ex.msg="Enter a number.";ex.mark="bad";draw();return}ok=Math.abs(n-e.v)<0.011}
+ ex.att++;ex.mark=ok?"ok":"bad";if(ok)ex.typed=1;
+ if(ok){ex.over=true;ex.res=1;ex.msg="Correct — elegant!";if(ex.mode=="daily")streakUp(ex.t.k)}
+ else if(ex.att>=5){ex.over=true;ex.res=2;ex.msg="Out of attempts — here is the solution."}
+ else{ex.msg="Not quite — try again.";if(e.type=="mc")ex.bad[v]=1}
+ if(ex.mode=="daily")sv(ex.t.k+"|"+ex.l+"|"+ex.date,{a:ex.att,r:ex.res});
+ draw()}
+$("send").onclick=function(){submit($("inp").value)};
+$("inp").oninput=function(){if(ex&&ex.mark=="bad"){ex.mark="";draw()}};
+$("inp").onfocus=function(){this.select()};
+$("inp").onkeydown=function(e){if(e.key==="Enter")submit(this.value)};
+$("h1").onclick=function(){ex.hint=1;draw()};
+$("h2").onclick=function(){ex.hint=2;draw()};
+$("nx").onclick=function(){start(ex.t,ex.l,"","practice")};
+$("back").onclick=function(){var e=$("ex"),m=ex.mode=="archive",rm=matchMedia("(prefers-reduced-motion: reduce)").matches;
+ var go2=function(){m?openArch(ex.t,ex.l):openSub(ex.t);if(!rm)$(m?"arch":"stage").animate([{opacity:0},{opacity:1}],{duration:160,easing:"ease-out"})};
+ if(rm){go2();return}
+ var a=e.animate([{opacity:1,transform:"none"},{opacity:0,transform:"translateY(6px)"}],{duration:130,easing:"ease-in",fill:"forwards"});
+ a.onfinish=function(){go2();a.cancel()}};
+["x","^","+","-","⌫"].forEach(function(k){var b=document.createElement("button");b.textContent=k;b.onclick=function(){var i=$("inp");i.value=k=="⌫"?i.value.slice(0,-1):i.value+k;i.focus()};$("kb").appendChild(b)});
+$("kbt").onclick=function(){var k=$("kb");k.style.display=k.style.display=="flex"?"none":"flex"};
+T.forEach(function(t){var m=document.createElement("button");m.textContent=t.n;m.onclick=function(){openSub(t)};menu.appendChild(m)});
+$("mbtn").onclick=function(){var v=menu.style.display==="block";menu.style.display=v?"none":"block";this.setAttribute("aria-expanded",String(!v))};
+var rt=document.documentElement;
+try{var sv0=localStorage.getItem("tema");if(sv0)rt.setAttribute("data-theme",sv0)}catch(e){}
+$("tbtn").onclick=function(){var c=rt.getAttribute("data-theme"),dark=c?c==="dark":!matchMedia("(prefers-color-scheme: light)").matches,nv=dark?"light":"dark";rt.setAttribute("data-theme",nv);try{localStorage.setItem("tema",nv)}catch(e){}};
+function tick(){var n=new Date(),m=new Date(n);m.setHours(24,0,0,0);var s=Math.floor((m-n)/1000),x=p2(Math.floor(s/3600))+":"+p2(Math.floor(s%3600/60))+":"+p2(s%60);
+ [].forEach.call(document.querySelectorAll(".cd"),function(e){e.textContent=x})}
+intro();tick();setInterval(tick,1000);
+if("serviceWorker" in navigator)addEventListener("load",function(){navigator.serviceWorker.register("sw.js").catch(function(){})});
+</script>
+</body>
+</html>
